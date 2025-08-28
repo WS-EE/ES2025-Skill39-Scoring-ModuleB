@@ -122,3 +122,76 @@ function Test-AspectSteps {
     }
 }
 
+# B1.M1 - RAS: RTR-AAL internal IP addresses are reachable
+if (Should-Run "B1M1") {
+    Test-AspectSteps -Aspect "B1.M1" -Description "RAS: RTR-AAL internal IP addresses are reachable" `
+        -DefaultIp "10.1.1.254" -Steps @(
+            @{
+                Name     = "RTR-AAL: IPv4 address is reachable"
+                Cmd      = "(Test-NetConnection 10.2.1.254 -WarningAction SilentlyContinue).PingSucceeded"
+                Expected = "True"
+            },
+            @{
+                Name     = "RTR-AAL: IPv6 address is reachable"
+                Cmd      = "(Test-NetConnection fd01:2:1::254 -WarningAction SilentlyContinue).PingSucceeded"
+                Expected = "True"
+            }
+        )
+}
+
+# B1.M2 - RAS: Site-to-Site VPN is active
+if (Should-Run "B1M2") {
+    Test-AspectSteps -Aspect "B1.M2" -Description "RAS: Site-to-Site VPN is active" `
+        -DefaultIp "10.1.1.254" -Steps @(
+            @{
+                Name     = "RTR-CPH: Site-to-Site VPN is active"
+                Cmd      = "(Get-VpnS2SInterface).ConnectionState"
+                Expected = "Connected"
+            }
+        )
+}
+
+# B1.M3 - RAS: Firewall is configured to block TCP/8080 + WinRM
+if (Should-Run "B1M3") {
+    Test-AspectSteps -Aspect "B1.M3" -Description "RAS: Firewall is configured to block TCP/8080 + WinRM" `
+        -DefaultIp "10.1.1.254" -Steps @(
+            @{
+                Name     = "RTR-CPH: TCP/8080 is blocked"
+                Cmd      = "netsh routing ip show filter name=Ethernet0"
+                Expected = "TCP/8080 is listed"
+                PassIf = { param($o) $o -match '\b8080\b' }
+            },
+            @{
+                Name     = "RTR-CPH: WINRM is blocked"
+                Cmd      = "netsh routing ip show filter name=Ethernet0"
+                Expected = "TCP/5985 is listed"
+                PassIf = { param($o) $o -match '\b5985\b' }
+            }
+        )
+}
+
+# B1.M4 - RAS: Port forward web service
+if (Should-Run "B1M4") {
+    Test-AspectSteps -Aspect "B1.M4" -Description "RAS: Port forward web service" `
+        -DefaultIp "10.1.1.254" -Steps @(
+            @{
+                Name     = "RTR-AAL: Port forward web service"
+                Cmd      = "netsh routing ip nat show interface"
+                Expected = "Port forward 8080 -> 80"
+                PassIf = { param($o) ($o -match '\b8080\b') -and ($o -match '\b80\b') }
+            }
+        )
+}
+
+# B1.M5 - RAS: NAT is configured
+if (Should-Run "B1M5") {
+    Test-AspectSteps -Aspect "B1.M5" -Description "RAS: NAT is configured" `
+        -DefaultIp "10.1.1.254" -Steps @(
+            @{
+                Name     = "RTR-CPH: NAT is configured"
+                Cmd      = "netsh routing ip nat show interface"
+                Expected = "Mode: Address and Port Translation"
+                PassIf = { param($o) $o -match '\bAddress and Port Translation\b' }
+            }
+        )
+}
