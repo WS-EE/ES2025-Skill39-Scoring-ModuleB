@@ -75,7 +75,6 @@ function Test-AspectSteps {
 
         $actual = ($res | Out-String).Trim()
 
-        # Show like your Test-AspectResult style
         if ($actual -eq 1 -or $actual -like " 1") {
             Write-Host "Testing aspect $Aspect failed" -ForegroundColor Red
             Write-Host "Expected: $expected" -ForegroundColor Cyan
