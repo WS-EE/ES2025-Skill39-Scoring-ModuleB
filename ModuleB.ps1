@@ -75,17 +75,12 @@ function Test-AspectSteps {
 
         $actual = ($res | Out-String).Trim()
 
-        if ($actual -eq 1 -or $actual -like " 1") {
-            Write-Host "Testing aspect $Aspect failed" -ForegroundColor Red
-            Write-Host "Expected: $expected" -ForegroundColor Cyan
-            Write-Host "Actual  : ERROR/1" -ForegroundColor White
-            Write-Host "Result  : FAIL" -ForegroundColor Red
-            continue
-        } else {
-            Write-Host "Expected:" -NoNewline; Write-Host " $expected" -ForegroundColor Cyan
-            Write-Host "Actual  :" -NoNewline; Write-Host " $actual"   -ForegroundColor White
-        }
-
+        Write-Host "Expected: $expected" -ForegroundColor Cyan
+        Write-Host "Actual  :" -ForegroundColor White
+        Write-Host "----- OUTPUT START -----" -ForegroundColor DarkGray
+        Write-Host $actual -ForegroundColor White
+        Write-Host "-----  OUTPUT END  -----" -ForegroundColor DarkGray        
+        
         # PASS/FAIL logic:
         # - if PassIf provided, use it
         # - otherwise do a reasonable default:
