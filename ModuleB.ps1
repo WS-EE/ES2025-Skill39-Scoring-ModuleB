@@ -194,3 +194,34 @@ if (Should-Run "B1M5") {
             }
         )
 }
+
+# B2.M1 - RAS: DC internal IP addresses are reachable
+if (Should-Run "B2M1") {
+    Test-AspectSteps -Aspect "B2.M1" -Description "RAS: DC internal IP addresses are reachable" `
+        -DefaultIp "10.2.1.254" -Steps @(
+            @{
+                Name     = "DC: IPv4 address is reachable"
+                Cmd      = "(Test-NetConnection 10.1.1.254 -WarningAction SilentlyContinue).PingSucceeded"
+                Expected = "True"
+            },
+            @{
+                Name     = "DC: IPv6 address is reachable"
+                Cmd      = "(Test-NetConnection fd01:1:1::254 -WarningAction SilentlyContinue).PingSucceeded"
+                Expected = "True"
+            }
+        )
+
+}
+
+# B2.M2 - RAS: NAT is configured
+if (Should-Run "B2M2") {
+    Test-AspectSteps -Aspect "B2.M2" -Description "RAS: NAT is configured" `
+        -DefaultIp "10.2.1.254" -Steps @(
+            @{
+                Name     = "RTR-AAL: NAT is configured"
+                Cmd      = "netsh routing ip nat show interface"
+                Expected = "Mode: Address and Port Translation"
+                PassIf = { param($o) $o -match '\bAddress and Port Translation\b' }
+            }
+        )
+}
