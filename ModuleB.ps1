@@ -190,6 +190,19 @@ if (Should-Run "B1M5") {
         )
 }
 
+# B1.M6 - IIS: Reverse proxy is configured for www.skillspublic.dk -> www.skillsnet.dk
+if (Should-Run "B1M6") {
+    Test-AspectSteps -Aspect "B1.M6" -Description "IIS: Reverse proxy is configured for www.skillspublic.dk -> www.skillsnet.dk" `
+        -DefaultIp "10.1.1.254" -Steps @(
+            @{
+                Name     = "IIS: Reverse proxy is configured for www.skillspublic.dk -> www.skillsnet.dk"
+                Cmd      = "(Invoke-WebRequest -Uri http://www.skillspublic.dk/).Headers.'X-Powered-By'"
+                Expected = "ARR/3.0"
+                PassIf = { param($o) $o -match '\bARR/3.0\b' }
+            }
+        )
+}
+
 # B2.M1 - RAS: DC internal IP addresses are reachable
 if (Should-Run "B2M1") {
     Test-AspectSteps -Aspect "B2.M1" -Description "RAS: DC internal IP addresses are reachable" `
