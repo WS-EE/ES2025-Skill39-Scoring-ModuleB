@@ -20,7 +20,7 @@ function Test-AspectSteps {
         [string]$Description,
         [array] $Steps,                  # each: @{ Name=''; Cmd=''; Expected=''; PassIf={param($out)$true}; Ip=''; User=''; SshKey=''; JumpIp=''; JumpUser=''; Local=$false; Manual=$false; Instructions='' }
         [string]$DefaultUser="Administrator",
-        [string]$DefaultSshKey="C:\Resource\ModuleB",
+        [string]$DefaultSshKey="C:\Resources\ModuleB",
         [string]$DefaultJumpUser="Administrator",
         [string]$DefaultIp,
         [switch]$DefaultManual=$False,
@@ -151,13 +151,13 @@ if (Should-Run "B1M3") {
         -DefaultIp "10.1.1.254" -Steps @(
             @{
                 Name     = "RTR-CPH: TCP/8080 is blocked"
-                Cmd      = "netsh routing ip show filter name=Ethernet0"
+                Cmd      = "netsh routing ip show filter name=INET"
                 Expected = "TCP/8080 is listed"
                 PassIf = { param($o) $o -match '\b8080\b' }
             },
             @{
                 Name     = "RTR-CPH: WINRM is blocked"
-                Cmd      = "netsh routing ip show filter name=Ethernet0"
+                Cmd      = "netsh routing ip show filter name=INET"
                 Expected = "TCP/5985 is listed"
                 PassIf = { param($o) $o -match '\b5985\b' }
             }
