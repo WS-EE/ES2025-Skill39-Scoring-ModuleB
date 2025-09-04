@@ -7,9 +7,6 @@
   _(You can override per aspect via `DefaultSshKey`, or per step via `SshKey`.)_
 
 ## Run
-`Aspect` accepts `B2`, `B2.M4`, or `B2M4`.
-No `-Aspect` = run everything.
-
 AD users import checks
 ```powershell
 PS > .\ADUserChecker.ps1
@@ -37,6 +34,9 @@ All tests
 ```powershell
 PS > .\ModuleB.ps1
 ```
+
+`Aspect` accepts `B2`, `B2.M4`, or `B2M4`.
+No `-Aspect` = run everything.
 
 All aspects within a sub-criterion
 ```powershell
