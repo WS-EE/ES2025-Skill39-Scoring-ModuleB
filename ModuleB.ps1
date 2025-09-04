@@ -567,7 +567,7 @@ if (Should-Run "B5M6") {
         -DefaultIp "10.1.1.3" -Steps @(
             @{
                 Name     = "SRV2: 12GB disk is attached"
-                Cmd      = "Get-PSDrive -Name C"
+                Cmd      = "Get-PSDrive -Name B"
                 Expected = "12GB disk attached under B: drive letter"
                 PassIf = { param($o) ($o -match '\bB\b') -and ($o -match '\b11\b') }
             }
@@ -638,20 +638,149 @@ if (Should-Run "B5M9") {
 }
 
 # B6.M1 - File: SMB encryption enabled on all files shares
+if (Should-Run "B6M1") {
+    Test-AspectSteps -Aspect "B6.M1" -Description "File: SMB encryption enabled on all files shares" `
+        -Steps @(
+            @{
+                Ip       = "10.1.1.2"
+                Name     = "SRV1: SMB encryption enabled on all file shares"
+                Cmd      = "Write-Host 'System wide check:'; (Get-SmbServerConfiguration).EncryptData; Write-Host 'Share-based check:'; Get-SmbShare | Select Name, EncryptData"
+                Expected = "Manual inspection - either system wide encryption is enabled or per share on all shares"
+                PassIf = { param($o) $o -match '\bTrue\b' }
+            },
+            @{
+                Ip       = "10.1.1.3"
+                Name     = "SRV2: SMB encryption enabled on all file shares"
+                Cmd      = "Write-Host 'System wide check:'; (Get-SmbServerConfiguration).EncryptData; Write-Host 'Share-based check:'; Get-SmbShare | Select Name, EncryptData"
+                Expected = "Manual inspection - either system wide encryption is enabled or per share on all shares"
+                PassIf = { param($o) $o -match '\bTrue\b' }
+            }
+        )
+}
 
 # B6.M2 - File: 10GB disk mounted as D: drive
+if (Should-Run "B6M2") {
+    Test-AspectSteps -Aspect "B6.M2" -Description "File: 10GB disk mounted as D: drive" `
+        -Steps @(
+            @{
+                Ip       = "10.1.1.2"
+                Name     = "SRV1: 10GB disk is attached"
+                Cmd      = "Get-PSDrive -Name D"
+                Expected = "10GB disk attached under D: drive letter"
+                PassIf = { param($o) ($o -match '\bD\b') -and ($o -match '\b9\b') }
+            },
+            @{
+                Ip       = "10.1.1.3"
+                Name     = "SRV2: 10GB disk is attached"
+                Cmd      = "Get-PSDrive -Name D"
+                Expected = "10GB disk attached under D: drive letter"
+                PassIf = { param($o) ($o -match '\bD\b') -and ($o -match '\b9\b') }
+            }
+        )
+}
 
-# B6.M3 - File: BitLocker encryption on the D: volume using the TPM-based protection
+# B6.M3 - File: BitLocker encryption on the D: volume using the TPM-based protection -- not possible to complete
+if (Should-Run "B6M3") {
+    Test-AspectSteps -Aspect "B6.M3" -Description "File: BitLocker encryption on the D: volume using the TPM-based protection" `
+        -DefaultIp "10.1.1.2" -Steps @(
+            @{
+                Name     = "SRV1: BitLocker encryption on the D: volume using the TPM-based protection"
+                Cmd      = "(Get-BitLockerVolume -MountPoint 'D:').KeyProtector"
+                Expected = "TPM is used as key protector"
+                PassIf = { param($o) ($o -match '\bTpm\b') }
+            }
+        )
+}
 
 # B6.M4 - File: DFS replication is configured between SRV1 and SRV2
+if (Should-Run "B6M4") {
+    Test-AspectSteps -Aspect "B6.M4" -Description "File: DFS replication is configured between SRV1 and SRV2" `
+        -DefaultIp "10.1.1.2" -Steps @(
+            @{
+                Name     = "DFS replication is configured between SRV1 and SRV2"
+                Cmd      = "Get-DfsrConnection | Select GroupName, SourceComputerName, DestinationComputerName"
+                Expected = "DFS Group is synchronized from SRV1->SRV2 and SRV2->SRV1"
+                PassIf = { param($o) ($o -match '\bSRV1\b') -and ($o -match '\bSRV2\b') }
+            }
+        )
+}
 
 # B6.M5 - FSRM: File extensions .exe, .com, .vbs, .msi are blocked (MANUAL)
+if (Should-Run "B6M5") {
+    Test-AspectSteps -Aspect "B6.M5" -Description "FSRM: File extensions .exe, .com, .vbs, .msi are blocked" `
+        -DefaultManual $True -Steps @(
+            @{
+                Name     = "File extensions .exe, .com, .vbs and .msi are blocked"
+                Expected = "It is not possible to add .exe, .com, .vbs and .msi files to network share"
+                Instructions = "
+                    1. Open CLIENT machine, log-in with random user
+                    2. Launch File Explorer
+                    3. Open \\srv2.skillsnet.dk\DFS\Users
+                    4. Try to add files with .exe, .com, .vbs and .msi extension
+                "
+            }
+        )
+}
 
 # B6.M6 - FSRM: User profile folders have quota configured (MANUAL)
+if (Should-Run "B6M6") {
+    Test-AspectSteps -Aspect "B6.M6" -Description "FSRM: User profile folders have quota configured" `
+        -DefaultManual $True -Steps @(
+            @{
+                Name     = "User profile folders have quota configured"
+                Expected = "Quota is 512 MB"
+                Instructions = "
+                    1. Open CLIENT machine, log-in with random user
+                    2. Launch File Explorer
+                    3. Mount \\srv1.skillsnet.dk\DFS\Users\<username>
+                    4. Check mounted disk maximum size
+                "
+            }
+        )
+}
 
 # B6.M7 - DHCP: HA IPv4 and IPv6 scopes
+if (Should-Run "B6M7") {
+    Test-AspectSteps -Aspect "B6.M7" -Description "DHCP: HA IPv4 and IPv6 scopes" `
+        -Steps @(
+            @{
+                Ip       = "10.1.1.2"
+                Name     = "DHCPv4 IPv4 HA is configured"
+                Cmd      = "Get-DhcpServerv4Failover"
+                Expected = "Manual inspection - SRV2 is as PartnerServer"
+                PassIf = { param($o) ($o -match '\bPartnerServer\b') -and ($o -match '\bsrv2\b') }
+            },
+            @{
+                Ip       = "10.1.1.2"
+                Name     = "DHCPv6 - check SRV1 priority"
+                Cmd      = "(Get-DhcpServerv6Scope).Preference)"
+                Expected = "Note down the priority, it needs to be lower than next step check at SRV2"
+            },
+            @{
+                Ip       = "10.1.1.3"
+                Name     = "DHCPv6 - check SRV2 priority"
+                Cmd      = "(Get-DhcpServerv6Scope).Preference)"
+                Expected = "It needs to be higher than last step check at SRV1"
+            }
+        )
+}
 
-# B6.M8 - DHCP: DEV-PC obtains its IP addresses via DHCP (MANUAL)
+# B6.M8 - DHCP: DEV-PC obtains its IP addresses via DHCP (MANUAL) -- DHCPv6 not possible to complete
+if (Should-Run "B6M8") {
+    Test-AspectSteps -Aspect "B6.M8" -Description "DHCP: DEV-PC obtains its IP addresses via DHCP" `
+        -DefaultManual $True -Steps @(
+            @{
+                Name     = "DEV-PC obtains its IP addresses via DHCP"
+                Expected = "DEV-PC has obtained IPv4 (10.1.2.10) and IPv6 (fd01:1:2::10) from DHCP server"
+                Instructions = "
+                    1. Open DEV-PC machine, log-in with Administrator
+                    2. Launch Terminal
+                    3. Check IP address configuration with 'ip a' command
+                    4. Make sure that IPv4 and IPv6 have been retrieved dynamically
+                "
+            }
+        )
+}
 
 # B7.M1 - Ansible: 1-hostname.yaml sets hostname (MANUAL)
 
