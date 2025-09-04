@@ -783,14 +783,117 @@ if (Should-Run "B6M8") {
 }
 
 # B7.M1 - Ansible: 1-hostname.yaml sets hostname (MANUAL)
+if (Should-Run "B7M1") {
+    Test-AspectSteps -Aspect "B7.M1" -Description "Ansible: 1-hostname.yaml sets hostname" `
+        -DefaultManual $True -Steps @(
+            @{
+                Name     = "DEV-SRV hostname is configured with 1-hostname.yaml playbook"
+                Expected = "Hostname is DEV-SRV"
+                Instructions = "
+                    1. Revert DEV-SRV machine snapshot
+                    2. Open DEV-PC machine, log-in with Administrator
+                    3. Launch Terminal
+                    4. Navigate to /ansible directory
+                    5. First run: ansible-playbook 1-hostname.yaml
+                    6. Validation command: ssh Administrator@10.1.2.1 'hostname'
+                    7. Second run: ansible-playbook 1-hostname.yaml (no changes)
+                "
+            }
+        )
+}
 
-# B7.M2 -Ansible: 2-adds.yaml configures AD DS environment (MANUAL)
 
-# B7.M3 -Ansible: 3-users.yaml imports users to AD DS environment (MANUAL)
+# B7.M2 - Ansible: 2-adds.yaml configures AD DS environment (MANUAL)
+if (Should-Run "B7M2") {
+    Test-AspectSteps -Aspect "B7.M2" -Description "Ansible: 2-adds.yaml configures AD DS environment" `
+        -DefaultManual $True -Steps @(
+            @{
+                Name     = "DEV-SRV AD DS is configured with 2-adds.yaml playbook"
+                Expected = "Domain is skillsdev.dk"
+                Instructions = "
+                    1. Open DEV-PC machine, log-in with Administrator
+                    2. Launch Terminal
+                    3. Navigate to /ansible directory
+                    4. First run: ansible-playbook 2-adds.yaml
+                    5. Validation command: ssh Administrator@10.1.2.1 'Get-ADForest'
+                    6. Second run: ansible-playbook 2-adds.yaml (no changes)
+                "
+            }
+        )
+}
 
-# B7.M4 -Ansible: 4-web.yaml creates IIS web server (MANUAL)
+# B7.M3 - Ansible: 3-users.yaml imports users to AD DS environment (MANUAL)
+if (Should-Run "B7M3") {
+    Test-AspectSteps -Aspect "B7.M3" -Description "Ansible: 3-users.yaml imports users to AD DS environment" `
+        -DefaultManual $True -Steps @(
+            @{
+                Name     = "DEV-SRV AD DS is configured with 3-users.yaml playbook"
+                Expected = "30x users are imported with FirstName, LastName, Email, JobTitle, City, Company and Department"
+                Instructions = "
+                    1. Open DEV-PC machine, log-in with Administrator
+                    2. Launch Terminal
+                    3. Navigate to /ansible directory
+                    4. First run: ansible-playbook 3-users.yaml
+                    5. Validation check from the DEV-SRV Active Directory Users and Computers manually
+                    6. Second run: ansible-playbook 3-users.yaml (no changes)
+                "
+            }
+        )
+}
 
-# B7.M5 -Ansible: 5-shares.yaml creates required web shares (MANUAL)
+# B7.M4 - Ansible: 4-web.yaml creates IIS web server (MANUAL)
+if (Should-Run "B7M4") {
+    Test-AspectSteps -Aspect "B7.M4" -Description "Ansible: 4-web.yaml creates IIS web server" `
+        -DefaultManual $True -Steps @(
+            @{
+                Name     = "DEV-SRV IIS is configured with 4-web.yaml playbook"
+                Expected = "Website has large message called'Skills Development'"
+                Instructions = "
+                    1. Open DEV-PC machine, log-in with Administrator
+                    2. Launch Terminal
+                    3. Navigate to /ansible directory
+                    4. First run: ansible-playbook 4-web.yaml
+                    5. Launch Firefox and navigate to www.skillsdev.dk
+                    6. Second run: ansible-playbook 4-web.yaml (no changes)
+                "
+            }
+        )
+}
 
-# B7.J1 -Ansible playbook style (MANUAL)
+# B7.M5 - Ansible: 5-shares.yaml creates required web shares (MANUAL)
+if (Should-Run "B7M5") {
+    Test-AspectSteps -Aspect "B7.M5" -Description "Ansible: 5-shares.yaml creates required web shares" `
+        -DefaultManual $True -Steps @(
+            @{
+                Name     = "DEV-SRV Shares are configured with 5-shares.yaml playbook"
+                Expected = "Website has large message called 'Skills Development'"
+                Instructions = "
+                    1. Open DEV-PC machine, log-in with Administrator
+                    2. Launch Terminal
+                    3. Navigate to /ansible directory
+                    4. Modify the /ansible/resources/ES2025_TP39_ModuleB_Shares.yaml
+                    4. First run: ansible-playbook 5-shares.yaml
+                    5. Validation command: ssh Administrator@10.1.2.1 'Get-SmbShare'
+                    6. Second run: ansible-playbook 5-shares.yaml (no changes)
+                "
+            }
+        )
+}
+
+# B7.J1 - Ansible playbook style (MANUAL)
+if (Should-Run "B7J1") {
+    Test-AspectSteps -Aspect "B7.J1" -Description "Ansible playbook style" `
+        -DefaultManual $True -Steps @(
+            @{
+                Name     = "JUDGMENT: Ansible playbook style"
+                Expected = "JUDGMENT: Ansible playbook style"
+                Instructions = "
+                    0 - Some playbooks abort with an error
+                    1 - All playbooks run successfully
+                    2 - Playbooks are idempotent (changed & failed states handled)
+                    3 - Extra features added, e.g Ansible Vault used, comments, passwords are hidden, etc
+                "
+            }
+        )
+}
 
