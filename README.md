@@ -144,3 +144,16 @@ Runs one aspect consisting of one or more steps.
 | `Local`        | bool        | Force local execution for this step                                                 |
 | `Manual`       | bool        | Mark this step as manual (not executed, not scored)                                 |
 | `Instructions` | string      | Shown for manual steps to guide the expert                                          |
+
+
+## Protection
+
+Encrypt and Decrypt files:
+```
+# Encrypt
+PS > EncryptDecryptFile.ps1 -FilePath .\ModuleB.ps1 -Password "EuroSkills2025" -Action encrypt
+
+# Decrypt
+PS > EncryptDecryptFile.ps1 -FilePath .\ModuleB.ps1.encrypted -Password "EuroSkills2025" -Action decrypt
+
+```
