@@ -386,6 +386,29 @@ if (Should-Run "B3M7") {
 }
 
 # B3.M8 -- GPO: Group Policies (7x) are configured according to requirements (MANUAL)
+if (Should-Run "B3M8") {
+    Test-AspectSteps -Aspect "B3.M8" -Description "GPO: Group Policies (7x) are configured according to requirements" `
+        -DefaultManual $True -Steps @(
+            @{
+                Name     = "7x group policies are configured according to requirements"
+                Expected = "Group Policies:
+                    Baseline Security Policy for Servers
+                    Baseline Security Policy for Desktops
+                    Administrative Accounts
+                    User - Restrict Tools
+                    Contractors - Customization
+                    Folder Redirection
+                    Disk Encryption
+                    "
+                Instructions = "
+                    1. Open DC machine, log-in with Administrator user
+                    2. Launch GPO editor
+                    3. Check each group policy against TP
+                "
+            }
+        )
+}
+
 
 # B3.M9 -- DNS: 15x IPv4 and 15x IPv6 forward records  
 if (Should-Run "B3M9") {
