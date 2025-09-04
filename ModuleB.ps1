@@ -440,10 +440,73 @@ if (Should-Run "B3M14") {
 }
 
 # B3.M15 - ADCS: CA AIA & CDP endpoint locations
+if (Should-Run "B3M15") {
+    Test-AspectSteps -Aspect "B3.M15" -Description "ADCS: CA AIA & CDP endpoint locations" `
+        -DefaultIp "10.1.1.1" -Steps @(
+            @{
+                Name     = "DC: CA AIA endpoint is correct"
+                Cmd      = "Get-CAAuthorityInformationAccess"
+                Expected = "AddToCertificateAia: True; Uri: http://cacerts.skillsnet.dk/SkillsnetCA.crt"
+                PassIf = { param($o) ($o -match '\bcacerts.skillsnet.dk\b') -and ($o -match '\bSkillsnetCA\b') }
+            },
+            @{
+                Name     = "DC: CA OCSP endpoint is correct"
+                Cmd      = "Get-CAAuthorityInformationAccess"
+                Expected = "AddToCertificateOcsp: True; Uri: http://ocsp.skillsnet.dk/ocsp"
+                PassIf = { param($o) $o -match '\bocsp.skillsnet.dk\b' }
+            },
+            @{
+                Name     = "DC: CA CDP endpoint is correct"
+                Cmd      = "Get-CACrlDistributionPoint"
+                Expected = "AddToCertificateCdp: True; Uri: http://crl.skillsnet.dk/SkillsnetCA.crl"
+                PassIf = { param($o) ($o -match '\bcrl.skillsnet.dk\b') -and ($o -match '\bSkillsnetCA\b') }
+            }
+        )
+}
 
 # B3.M16 - ADCS: CRL and CRT hosted on SRV2 and OCSP on DC
+if (Should-Run "B3M16") {
+    Test-AspectSteps -Aspect "B3.M16" -Description "ADCS: CRL and CRT hosted on SRV2 and OCSP on DC" `
+        -DefaultIp "10.1.1.1" -Steps @(
+            @{
+                Name     = "CRL and CRT are hosted on SRV2"
+                Cmd      = "Write-Host 'CA AIA endpoint:'; Resolve-DnsName cacerts.skillsnet.dk; Write-Host; Write-Host 'CA CDP endpoint:'; Resolve-DnsName crl.skillsnet.dk; Write-Host; Write-Host 'HTTP check:'; (Invoke-WebRequest -Uri http://crl.skillsnet.dk/SkillsnetCA.crl).StatusCode"
+                Expected = "Manual inspection - both of the records need to be hosted on SRV2 and StatusCode is 200"
+                PassIf = { param($o) ($o -match '\b10.1.1.3\b') -and ($o -match '\bfd01:1:1::3\b') -and ($o -match '\b200\b') }
+            },
+            @{
+                Name     = "OCSP is hosted on DC"
+                Cmd      = "Write-Host 'DNS Check:'; Resolve-DnsName ocsp.skillsnet.dk; Write-Host; Write-Host 'HTTP check:'; (Invoke-WebRequest -Uri http://ocsp.skillsnet.dk/ocsp).StatusCode"
+                Expected = "OCSP need to hosted on SRV2 and StatusCode is 200"
+                PassIf = { param($o) ($o -match '\b10.1.1.1\b') -and ($o -match '\bfd01:1:1::1\b') -and ($o -match '\b200\b') }
+            }
+        )
+}
 
 # B3.M17 - ADCS: Templates are published - Skills Users, Skills Endpoints and Skills Web Server
+if (Should-Run "B3M17") {
+    Test-AspectSteps -Aspect "B3.M17" -Description "ADCS: Templates are published - Skills Users, Skills Endpoints and Skills Web Server" `
+        -DefaultIp "10.1.1.1" -Steps @(
+            @{
+                Name     = "ADCS: Template - Skills Users"
+                Cmd      = "certutil -CATemplates | Select-String '^Skills'"
+                Expected = "Template named Skills Users exist"
+                PassIf = { param($o) $o -match '\bSkills Users\b' }
+            },
+            @{
+                Name     = "ADCS: Template - Skills Endpoints"
+                Cmd      = "certutil -CATemplates | Select-String '^Skills'"
+                Expected = "Template named Skills Endpoints exist"
+                PassIf = { param($o) $o -match '\bSkills Endpoints\b' }
+            },
+            @{
+                Name     = "ADCS: Template - Skills Web Server"
+                Cmd      = "certutil -CATemplates | Select-String '^Skills'"
+                Expected = "Template named Skills Web Server exist"
+                PassIf = { param($o) $o -match '\bSkills Web Server\b' }
+            }
+        )
+}
 
 # B3.M18 - Backup: Script backups required items - users.csv, GPOs and 5 web sites (MANUAL)
 
