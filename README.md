@@ -10,6 +10,29 @@
 `Aspect` accepts `B2`, `B2.M4`, or `B2M4`.
 No `-Aspect` = run everything.
 
+AD users import checks
+```powershell
+PS > .\ADUserChecker.ps1
+```
+
+AD users import checks example output
+```powershell
+Mismatched UPN for antonio.hall. Actual: antonio.hallsd@skillsnet.dk, Expected: antonio.hall@skillsnet.dk
+Mismatched last name for andrew.clements. Actual: Clementssd, Expected: Clements
+Mismatched first name for alexander.valencia. Actual: Alexanderas, Expected: Alexander
+User with SAMAccountName annette.morris not found in AD.
+Mismatched job title for chelsea.raymond. Actual: 23, Expected: Rural practice surveyor
+Mismatched department for chelsea.raymond. Actual: Finance232323, Expected: Finance
+Mismatched job title for charles.ibarra. Actual: Chartered public finance accountantsdsd, Expected: Chartered public finance accountant
+Users are located in these OUs:
+OU=Development,OU=Users,OU=Skills,DC=skillsnet,DC=dk: 305
+OU=Tech,OU=Users,OU=Skills,DC=skillsnet,DC=dk: 357
+OU=Contractors,OU=Users,OU=Skills,DC=skillsnet,DC=dk: 343
+OU=Finance,OU=Users,OU=Skills,DC=skillsnet,DC=dk: 339
+OU=Employees,OU=Users,OU=Skills,DC=skillsnet,DC=dk: 319
+OU=Sales,OU=Users,OU=Skills,DC=skillsnet,DC=dk: 336
+```
+
 All tests
 ```powershell
 PS > .\ModuleB.ps1
@@ -29,17 +52,60 @@ PS> .\ModuleB.ps1 -Aspect B5.J1
 
 What you will see for each step:
 ```powershell
-[1/2] IPv4 ping
-Expected: True
-Actual  : True
-Result  : PASS
+----------------------------------------------------------
+Testing aspect B1.M3
+RAS: Firewall is configured to block TCP/8080 + WinRM
+
+[1/2] RTR-CPH: TCP/8080 is blocked
+Expected: TCP/8080 is listed
+Actual  :
+----- OUTPUT START -----
+Filter Information for Interface INET
+------------------------------------------------------------------
+
+Fragment checking is Disabled.
+No input filters configured.
+
+Filter Type           : OUTPUT
+Default Action        : FORWARD
+
+    Src Addr       Src Mask         Dst Addr       Dst Mask      Proto  Src Port  Dst Port
+------------------------------------------------------------------------------------------
+        0.0.0.0         0.0.0.0         0.0.0.0         0.0.0.0    TCP       0    8080
+        0.0.0.0         0.0.0.0         0.0.0.0         0.0.0.0    TCP       0    5986
+        0.0.0.0         0.0.0.0         0.0.0.0         0.0.0.0    TCP       0    5987
+No demand-dial filters configured.
+-----  OUTPUT END  -----
+Result: PASS
+
+[2/2] RTR-CPH: WINRM is blocked
+Expected: TCP/5985 is listed
+Actual  :
+----- OUTPUT START -----
+Filter Information for Interface INET
+------------------------------------------------------------------
+
+Fragment checking is Disabled.
+No input filters configured.
+
+Filter Type           : OUTPUT
+Default Action        : FORWARD
+
+    Src Addr       Src Mask         Dst Addr       Dst Mask      Proto  Src Port  Dst Port
+------------------------------------------------------------------------------------------
+        0.0.0.0         0.0.0.0         0.0.0.0         0.0.0.0    TCP       0    8080
+        0.0.0.0         0.0.0.0         0.0.0.0         0.0.0.0    TCP       0    5986
+        0.0.0.0         0.0.0.0         0.0.0.0         0.0.0.0    TCP       0    5987
+No demand-dial filters configured.
+-----  OUTPUT END  -----
+Result: FAIL
 ```
 
 At the end of the aspect
 ```powershell
-Score   : 1/2 (automated steps only)
-Please mark now aspect B1.M1
-Move to the next aspect? [y/n]
+Score: 1/2 (automated steps only)
+Please mark now aspect B1.M3
+Move to the next aspect? [y/n]:
 ```
 
 * Automated steps: executed over SSH (or locally), compared to `Expected`, scored. Assessment can be done alternatively with regex using `PassIf`.
