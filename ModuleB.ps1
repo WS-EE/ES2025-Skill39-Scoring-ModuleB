@@ -315,7 +315,7 @@ if (Should-Run "B3M4") {
         )
 }
 
-# B3.M5 - Separate script
+# B3.M5 - ADDS: Imported users from the CSV with correct parameters (Separate script)
 
 
 # B3.M6 - ADDS: FGPP polices are configured
@@ -378,16 +378,17 @@ if (Should-Run "B3M7") {
             @{
                 Name     = "ADFS is running under sso.skillsnet.dk"
                 Cmd      = "(Invoke-WebRequest -Uri https://sso.skillsnet.dk/federationmetadata/2007-06/federationmetadata.xml).StatusCode"
-                Expected = "200"                 
+                Expected = "200"
+                PassIf = { param($o) $o -match '\b200\b' }
             }
         )
 }
 
-# B3.M8 -- MANUAL
+# B3.M8 -- GPO: Group Policies (7x) are configured according to requirements (MANUAL)
 
-# B3.M9 -- need to think it through
+# B3.M9 -- DNS: 15x IPv4 and 15x IPv6 forward records (need to think it through)
 
-# B3.M10 -- need to think it through
+# B3.M10 -- DNS: 7x IPv4 and 7x IPv6 reverse records (need to think it through)
 
 # B3.M11 - DNS: Dynamic updates for domain-joined machines are enabled
 if (Should-Run "B3M11") {
@@ -437,3 +438,103 @@ if (Should-Run "B3M14") {
             }
         )
 }
+
+# B3.M15 - ADCS: CA AIA & CDP endpoint locations
+
+# B3.M16 - ADCS: CRL and CRT hosted on SRV2 and OCSP on DC
+
+# B3.M17 - ADCS: Templates are published - Skills Users, Skills Endpoints and Skills Web Server
+
+# B3.M18 - Backup: Script backups required items - users.csv, GPOs and 5 web sites (MANUAL)
+
+# B3.M19 - Backup: Scripts sends an e-mail notification to support@nordicbackup.net (MANUAL)
+
+# B3.M20 - Backup: C:\Backups are backed up to iSCSI target with Windows Server Backup
+
+# B3.M21 - Backup: Scheduled to run daily at 02:00 (BOTH)
+
+# B3.J1 - Backup: PowerShell script style (MANUAL)
+
+# B3.J2 - Backup: Users backup (MANUAL)
+
+# B4.M1 - ADDS: promoted as RODC on domain skillsnet.dk"
+if (Should-Run "B4M1") {
+    Test-AspectSteps -Aspect "B4.M1" -Description "ADDS: promoted as RODC on domain skillsnet.dk'" `
+        -DefaultIp "10.2.1.1" -Steps @(
+            @{
+                Name     = "ADDS: promoted as RODC on domain skillsnet.dk'"
+                Cmd      = "(Get-ADDomainController -Server RODC).IsReadOnly"
+                Expected = "True"
+            }
+        )
+}
+
+# B5.M1 - IIS: Required web sites are hosted - www, intra and app"
+if (Should-Run "B5M1") {
+    Test-AspectSteps -Aspect "B5.M1" -Description "IIS: Required web sites are hosted - www, intra and app'" `
+        -DefaultIp "10.1.1.3" -Steps @(
+            @{
+                Name     = "www'"
+                Cmd      = "(Get-Website).Bindings.Collection"
+                Expected = "http 80:www.skillsnet.dk"
+                PassIf = { param($o) $o -match '\bwww.skillsnet.dk\b' }
+            },
+            @{
+                Name     = "app'"
+                Cmd      = "(Get-Website).Bindings.Collection"
+                Expected = "http 80:app.skillsnet.dk"
+                PassIf = { param($o) $o -match '\bapp.skillsnet.dk\b' }
+            },
+            @{
+                Name     = "intra'"
+                Cmd      = "(Get-Website).Bindings.Collection"
+                Expected = "http 80:intra.skillsnet.dk"
+                PassIf = { param($o) $o -match '\bintra.skillsnet.dk\b' }
+            }
+        )
+}
+
+# B5.M2 - IIS: Certificate-based authentication works at intra.skillsnet.dk (MANUAL)
+
+# B5.M3 -IIS: SAML-based authentication works at app.skillsnet.dk (MANUAL)
+
+# B5.M4 - IIS: ADFS provides correct claims for app.skillsnet.dk (MANUAL)
+
+# B5.M5 - IIS: Web sites have valid certificates issued by Skillsnet CA (MANUAL)
+
+# B5.M6 - Storage: 12GB disk is attached
+
+# B5.M7 - Storage: iSCSI disk configured correctly
+
+# B5.M8 - Storage: iSCSI access is allowed only from authorized initiator DC server
+
+# B5.M9 - WEF: Security events are forwarded from domain-joined computers
+
+# B6.M1 - File: SMB encryption enabled on all files shares
+
+# B6.M2 - File: 10GB disk mounted as D: drive
+
+# B6.M3 - File: BitLocker encryption on the D: volume using the TPM-based protection
+
+# B6.M4 - File: DFS replication is configured between SRV1 and SRV2
+
+# B6.M5 - FSRM: File extensions .exe, .com, .vbs, .msi are blocked (MANUAL)
+
+# B6.M6 - FSRM: User profile folders have quota configured (MANUAL)
+
+# B6.M7 - DHCP: HA IPv4 and IPv6 scopes
+
+# B6.M8 - DHCP: DEV-PC obtains its IP addresses via DHCP (MANUAL)
+
+# B7.M1 - Ansible: 1-hostname.yaml sets hostname (MANUAL)
+
+# B7.M2 -Ansible: 2-adds.yaml configures AD DS environment (MANUAL)
+
+# B7.M3 -Ansible: 3-users.yaml imports users to AD DS environment (MANUAL)
+
+# B7.M4 -Ansible: 4-web.yaml creates IIS web server (MANUAL)
+
+# B7.M5 -Ansible: 5-shares.yaml creates required web shares (MANUAL)
+
+# B7.J1 -Ansible playbook style (MANUAL)
+
