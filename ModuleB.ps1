@@ -47,7 +47,8 @@ function Test-AspectSteps {
         $sshKey   = if ($s.ContainsKey('SshKey') -and $s.SshKey) { $s.SshKey } else { $DefaultSshKey }
         $jumpIp   = $s.JumpIp
         $jumpUser = if ($s.ContainsKey('JumpUser') -and $s.JumpUser) { $s.JumpUser } else { $DefaultJumpUser }
-        $local    = if ($s.ContainsKey('Local'))  { [bool]$s.Local }  else { [bool]$DefaultLocal }        $manual   = if ($s.ContainsKey('Manual')) { [bool]$s.Manual } else { [bool]$DefaultManual }
+        $local    = if ($s.ContainsKey('Local'))  { [bool]$s.Local }  else { [bool]$DefaultLocal }
+        $manual   = if ($s.ContainsKey('Manual')) { [bool]$s.Manual } else { [bool]$DefaultManual }
         $instr    = $s.Instructions
 
         Write-Host ""
@@ -772,16 +773,137 @@ if (Should-Run "B3M17") {
 }
 
 # B3.M18 - Backup: Script backups required items - users.csv, GPOs and 5 web sites (MANUAL)
+if (Should-Run "B3M18") {
+    Test-AspectSteps -Aspect "B3.M18" -Description "Backup: Script backups required items - users.csv, GPOs and 5 web sites" `
+        -DefaultManual $True -Steps @(
+            @{
+                Name     = "Backup script - users.csv"
+                Expected = "Users.csv exists at C:\Backups\Users.csv"
+                Instructions = "
+                    1. Open DC machine, log-in with Administrator user
+                    2. Launch File Explorez
+                    3. Navigate to C:\Backups\
+                    4. Users.csv exists with expected content
+                "
+            },
+            @{
+                Name     = "Backup script - GPOs"
+                Expected = "GPOs exists at C:\Backups\GPOs"
+                Instructions = "
+                    1. Open DC machine, log-in with Administrator user
+                    2. Launch File Explorer
+                    3. Navigate to C:\Backups\GPOs\
+                    4. GPOs exists with expected content
+                "
+            },
+            @{
+                Name     = "Backup script - Web Sites"
+                Expected = "Web site backups exists at C:\Backups\Web\
+                    crl.skillsnet.dk
+                    cacerts.skillsnet.dk
+                    www.skillsnet.dk
+                    intra.skillsnet.dk
+                    app.skillsnet.dk"
+                Instructions = "
+                    1. Open DC machine, log-in with Administrator user
+                    2. Launch File Explorer
+                    3. Navigate to C:\Backups\Web\
+                    4. Web sites exists with expected content
+                "
+            }
+        )
+}
 
 # B3.M19 - Backup: Scripts sends an e-mail notification to support@nordicbackup.net (MANUAL)
+if (Should-Run "B3M19") {
+    Test-AspectSteps -Aspect "B3.M19" -Description "Backup: Scripts sends an e-mail notification to support@nordicbackup.net" `
+        -DefaultManual $True -Steps @(
+            @{
+                Name     = "Script sends an e-mail to support@nordicbackup.net"
+                Expected = "E-mail exists at INET server"
+                Instructions = "
+                    1. Open DC machine, log-in with Administrator user
+                    2. Launch Terminal
+                    3. Navigate to C:\Backups\
+                    4. Run Backup.ps1 script
+                    5. Open INET machine, log-in with Administrator user
+                    6. Launch Thunderbird
+                    7. Look for an e-mail
+                "
+            }
+        )
+}
 
 # B3.M20 - Backup: C:\Backups are backed up to iSCSI target with Windows Server Backup
+if (Should-Run "B3M20") {
+    Test-AspectSteps -Aspect "B3.M20" -Description "Backup: C:\Backups are backed up to iSCSI target with Windows Server Backup" `
+        -DefaultIp "10.1.1.1" -Steps @(
+            @{
+                Name     = "DC: Backups are backed up to iSCSI target"
+                Cmd      = "(Get-WBPolicy).BackupTargets"
+                Expected = "iSCSI disk"
+                PassIf = { param($o) $o -match '\bDISK\b' }
+            }
+        )
+}
 
-# B3.M21 - Backup: Scheduled to run daily at 02:00 (BOTH)
+# B3.M21 - Backup: Scheduled to run daily at 02:00
+if (Should-Run "B3M21") {
+    Test-AspectSteps -Aspect "B3.M21" -Description "Backup: Scheduled to run daily at 02:00" `
+        -DefaultIp "10.1.1.1" -Steps @(
+            @{
+                Name     = "Backup Schedule at Windows Backup"
+                Cmd      = "(Get-WBPolicy).Schedule"
+                Expected = "Runs next day at 2:00:00 AM"
+                PassIf = { param($o) $o -match '\b2:00:00 AM\b' }
+            },
+            @{
+                Name     = "Backup Schedule at Task Scheduler"
+                Manual   = $True
+                Expected = "Task scheduler exists and runs daily at 2:00:00 AM"
+                Instructions = "
+                    1. Open DC machine, log-in with Administrator user
+                    2. Launch Task Scheduler
+                    3. Look for backup task
+                    4. Check the policy for execution
+                "
+            }
+        )
+}
 
 # B3.J1 - Backup: PowerShell script style (MANUAL)
+if (Should-Run "B3J1") {
+    Test-AspectSteps -Aspect "B7.J1" -Description "Powershell script style" `
+        -DefaultManual $True -Steps @(
+            @{
+                Name     = "JUDGMENT: Powershell script style"
+                Expected = "JUDGMENT: Powershell script style"
+                Instructions = "
+                    0 - Doesn't run; major errors; no structure or logic
+                    1 - Runs with issues; poor structure; minimal understanding
+                    2 - Works correctly; basic structure and logic; few comments
+                    3 - Clean, efficent; well-structured; good use of comments, functions and error handling
+                "
+            }
+        )
+}
 
 # B3.J2 - Backup: Users backup (MANUAL)
+if (Should-Run "B3J2") {
+    Test-AspectSteps -Aspect "B7.J2" -Description "Users backup" `
+        -DefaultManual $True -Steps @(
+            @{
+                Name     = "JUDGMENT: Users backup"
+                Expected = "JUDGMENT: Users backup"
+                Instructions = "
+                    0 - File missing or unreadable
+                    1 - File exists but missing most required fields or OU path
+                    2 - File includes OU path and some key attributes, but incomplete or inconsistent
+                    3 - File includes full OU path and all key user attributes (samAccountName, UPN, first name, last name, etc.), correctly formatted
+                "
+            }
+        )
+}
 
 # B4.M1 - ADDS: promoted as RODC on domain skillsnet.dk"
 if (Should-Run "B4M1") {
@@ -1223,4 +1345,3 @@ if (Should-Run "B7J1") {
             }
         )
 }
-
