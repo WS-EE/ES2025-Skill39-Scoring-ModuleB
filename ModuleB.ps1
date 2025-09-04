@@ -386,9 +386,271 @@ if (Should-Run "B3M7") {
 
 # B3.M8 -- GPO: Group Policies (7x) are configured according to requirements (MANUAL)
 
-# B3.M9 -- DNS: 15x IPv4 and 15x IPv6 forward records (need to think it through)
+# B3.M9 -- DNS: 15x IPv4 and 15x IPv6 forward records  
+if (Should-Run "B3M9") {
+    Test-AspectSteps -Aspect "B3.M9" -Description "DNS: 15x IPv4 and 15x IPv6 forward records" `
+        -DefaultIp "10.1.1.1" -Steps @(
+            @{
+                Name     = "DC.skillsnet.dk - IPv4 check"
+                Cmd      = "Resolve-DnsName DC.skillsnet.dk"
+                Expected = "DC.skillsnet.dk -> 10.1.1.1"
+                PassIf = { param($o) $o -match '\b10.1.1.1\b' }               
+            },
+            @{
+                Name     = "DC.skillsnet.dk - IPv6 check"
+                Cmd      = "Resolve-DnsName DC.skillsnet.dk"
+                Expected = "DC.skillsnet.dk -> fd01:1:1::1"
+                PassIf = { param($o) $o -match '\bfd01:1:1::1\b' }               
+            },
+            @{
+                Name     = "SRV1.skillsnet.dk - IPv4 check"
+                Cmd      = "Resolve-DnsName SRV1.skillsnet.dk"
+                Expected = "SRV1.skillsnet.dk -> 10.1.1.2"
+                PassIf = { param($o) $o -match '\b10.1.1.2\b' }               
+            },
+            @{
+                Name     = "SRV1.skillsnet.dk - IPv6 check"
+                Cmd      = "Resolve-DnsName SRV1.skillsnet.dk"
+                Expected = "SRV1.skillsnet.dk -> fd01:1:1::2"
+                PassIf = { param($o) $o -match '\bfd01:1:1::2\b' }               
+            },
+            @{
+                Name     = "SRV2.skillsnet.dk - IPv4 check"
+                Cmd      = "Resolve-DnsName SRV2.skillsnet.dk"
+                Expected = "SRV2.skillsnet.dk -> 10.1.1.3"
+                PassIf = { param($o) $o -match '\b10.1.1.3\b' }               
+            },
+            @{
+                Name     = "SRV2.skillsnet.dk - IPv6 check"
+                Cmd      = "Resolve-DnsName SRV2.skillsnet.dk"
+                Expected = "SRV2.skillsnet.dk -> fd01:1:1::3"
+                PassIf = { param($o) $o -match '\bfd01:1:1::3\b' }               
+            },
+            @{
+                Name     = "RTR-CPH.skillsnet.dk - IPv4 check"
+                Cmd      = "Resolve-DnsName RTR-CPH.skillsnet.dk"
+                Expected = "RTR-CPH.skillsnet.dk -> 10.1.1.254"
+                PassIf = { param($o) $o -match '\b10.1.1.254\b' }               
+            },
+            @{
+                Name     = "RTR-CPH.skillsnet.dk - IPv6 check"
+                Cmd      = "Resolve-DnsName RTR-CPH.skillsnet.dk"
+                Expected = "RTR-CPH.skillsnet.dk -> fd01:1:1::254"
+                PassIf = { param($o) $o -match '\bfd01:1:1::254\b' }               
+            },
+            @{
+                Name     = "RTR-AAL.skillsnet.dk - IPv4 check"
+                Cmd      = "Resolve-DnsName RTR-AAL.skillsnet.dk"
+                Expected = "RTR-CPH.skillsnet.dk -> 10.2.1.254"
+                PassIf = { param($o) $o -match '\b10.2.1.254\b' }               
+            },
+            @{
+                Name     = "RTR-AAL.skillsnet.dk - IPv6 check"
+                Cmd      = "Resolve-DnsName RTR-AAL.skillsnet.dk"
+                Expected = "RTR-AAL.skillsnet.dk -> fd01:2:1::254"
+                PassIf = { param($o) $o -match '\bfd01:1:2::254\b' }               
+            },
+            @{
+                Name     = "RODC.skillsnet.dk - IPv4 check"
+                Cmd      = "Resolve-DnsName RODC.skillsnet.dk"
+                Expected = "RTR-CPH.skillsnet.dk -> 10.2.1.1"
+                PassIf = { param($o) $o -match '\b10.2.1.1\b' }               
+            },
+            @{
+                Name     = "RODC.skillsnet.dk - IPv6 check"
+                Cmd      = "Resolve-DnsName RODC.skillsnet.dk"
+                Expected = "RODC.skillsnet.dk -> fd01:2:1::1"
+                PassIf = { param($o) $o -match '\bfd01:1:2::1\b' }               
+            },
+            @{
+                Name     = "CLIENT.skillsnet.dk - IPv4 check"
+                Cmd      = "Resolve-DnsName CLIENT.skillsnet.dk"
+                Expected = "CLIENT.skillsnet.dk -> 10.2.1.10"
+                PassIf = { param($o) $o -match '\b10.2.1.10\b' }               
+            },
+            @{
+                Name     = "CLIENT.skillsnet.dk - IPv6 check"
+                Cmd      = "Resolve-DnsName CLIENT.skillsnet.dk"
+                Expected = "CLIENT.skillsnet.dk -> fd01:2:1::10"
+                PassIf = { param($o) $o -match '\bfd01:2:1::10\b' }               
+            },
+            @{
+                Name     = "SSO.skillsnet.dk - IPv4 check"
+                Cmd      = "Resolve-DnsName SSO.skillsnet.dk"
+                Expected = "SSO.skillsnet.dk -> 10.1.1.1"
+                PassIf = { param($o) $o -match '\b10.1.1.1\b' }               
+            },
+            @{
+                Name     = "SSO.skillsnet.dk - IPv6 check"
+                Cmd      = "Resolve-DnsName SSO.skillsnet.dk"
+                Expected = "SSO.skillsnet.dk -> fd01:1:1::1"
+                PassIf = { param($o) $o -match '\bfd01:1:1::1\b' }               
+            },
+            @{
+                Name     = "WWW.skillsnet.dk - IPv4 check"
+                Cmd      = "Resolve-DnsName WWW.skillsnet.dk"
+                Expected = "WWW.skillsnet.dk -> 10.1.1.3"
+                PassIf = { param($o) $o -match '\b10.1.1.3\b' }               
+            },
+            @{
+                Name     = "WWW.skillsnet.dk - IPv6 check"
+                Cmd      = "Resolve-DnsName WWW.skillsnet.dk"
+                Expected = "WWW.skillsnet.dk -> fd01:1:1::3"
+                PassIf = { param($o) $o -match '\bfd01:1:1::3\b' }               
+            },
+            @{
+                Name     = "INTRA.skillsnet.dk - IPv4 check"
+                Cmd      = "Resolve-DnsName INTRA.skillsnet.dk"
+                Expected = "INTRA.skillsnet.dk -> 10.1.1.3"
+                PassIf = { param($o) $o -match '\b10.1.1.3\b' }               
+            },
+            @{
+                Name     = "INTRA.skillsnet.dk - IPv6 check"
+                Cmd      = "Resolve-DnsName INTRA.skillsnet.dk"
+                Expected = "INTRA.skillsnet.dk -> fd01:1:1::3"
+                PassIf = { param($o) $o -match '\bfd01:1:1::3\b' }               
+            },
+            @{
+                Name     = "APP.skillsnet.dk - IPv4 check"
+                Cmd      = "Resolve-DnsName APP.skillsnet.dk"
+                Expected = "APP.skillsnet.dk -> 10.1.1.3"
+                PassIf = { param($o) $o -match '\b10.1.1.3\b' }               
+            },
+            @{
+                Name     = "APP.skillsnet.dk - IPv6 check"
+                Cmd      = "Resolve-DnsName APP.skillsnet.dk"
+                Expected = "APP.skillsnet.dk -> fd01:1:1::3"
+                PassIf = { param($o) $o -match '\bfd01:1:1::3\b' }               
+            },
+            @{
+                Name     = "CRL.skillsnet.dk - IPv4 check"
+                Cmd      = "Resolve-DnsName CRL.skillsnet.dk"
+                Expected = "CRL.skillsnet.dk -> 10.1.1.3"
+                PassIf = { param($o) $o -match '\b10.1.1.3\b' }               
+            },
+            @{
+                Name     = "CRL.skillsnet.dk - IPv6 check"
+                Cmd      = "Resolve-DnsName CRL.skillsnet.dk"
+                Expected = "CRL.skillsnet.dk -> fd01:1:1::3"
+                PassIf = { param($o) $o -match '\bfd01:1:1::3\b' }               
+            },
+            @{
+                Name     = "CACERTS.skillsnet.dk - IPv4 check"
+                Cmd      = "Resolve-DnsName CACERTS.skillsnet.dk"
+                Expected = "CACERTS.skillsnet.dk -> 10.1.1.3"
+                PassIf = { param($o) $o -match '\b10.1.1.3\b' }               
+            },
+            @{
+                Name     = "CACERTS.skillsnet.dk - IPv6 check"
+                Cmd      = "Resolve-DnsName CACERTS.skillsnet.dk"
+                Expected = "CACERTS.skillsnet.dk -> fd01:1:1::3"
+                PassIf = { param($o) $o -match '\bfd01:1:1::3\b' }               
+            },
+            @{
+                Name     = "OCSP.skillsnet.dk - IPv4 check"
+                Cmd      = "Resolve-DnsName OCSP.skillsnet.dk"
+                Expected = "OCSP.skillsnet.dk -> 10.1.1.1"
+                PassIf = { param($o) $o -match '\b10.1.1.1\b' }               
+            },
+            @{
+                Name     = "OCSP.skillsnet.dk - IPv6 check"
+                Cmd      = "Resolve-DnsName OCSP.skillsnet.dk"
+                Expected = "OCSP.skillsnet.dk -> fd01:1:1::1"
+                PassIf = { param($o) $o -match '\bfd01:1:1::1\b' }               
+            }
+        )
+}
 
-# B3.M10 -- DNS: 7x IPv4 and 7x IPv6 reverse records (need to think it through)
+# B3.M10 -- DNS: 7x IPv4 and 7x IPv6 reverse records
+if (Should-Run "B3M10") {
+    Test-AspectSteps -Aspect "B3.M10" -Description "DNS: 7x IPv4 and 7x IPv6 reverse records" `
+        -DefaultIp "10.1.1.1" -Steps @(
+            @{
+                Name     = "DC IPv4 PTR - 10.1.1.1"
+                Cmd      = "Resolve-DnsName 10.1.1.1"
+                Expected = "10.1.1.1 -> DC.skillsnet.dk"
+                PassIf = { param($o) $o -match '\bDC.skillsnet.dk\b' }               
+            },
+            @{
+                Name     = "DC IPv6 PTR - fd01:1:1::1"
+                Cmd      = "Resolve-DnsName fd01:1:1::1"
+                Expected = "fd01:1:1::1-> DC.skillsnet.dk"
+                PassIf = { param($o) $o -match '\bDC.skillsnet.dk\b' }               
+            },
+            @{
+                Name     = "RODC IPv4 PTR - 10.2.1.1"
+                Cmd      = "Resolve-DnsName 10.2.1.1"
+                Expected = "10.1.1.1 -> RODC.skillsnet.dk"
+                PassIf = { param($o) $o -match '\bRODC.skillsnet.dk\b' }               
+            },
+            @{
+                Name     = "RODC IPv6 PTR - fd01:2:1::1"
+                Cmd      = "Resolve-DnsName fd01:2:1::1"
+                Expected = "fd01:2:1::1-> RODC.skillsnet.dk"
+                PassIf = { param($o) $o -match '\bRODC.skillsnet.dk\b' }               
+            },
+            @{
+                Name     = "SRV1 IPv4 PTR - 10.1.1.2"
+                Cmd      = "Resolve-DnsName 10.1.1.2"
+                Expected = "10.1.1.2 -> SRV1.skillsnet.dk"
+                PassIf = { param($o) $o -match '\bSRV1.skillsnet.dk\b' }               
+            },
+            @{
+                Name     = "SRV1 IPv6 PTR - fd01:1:1::2"
+                Cmd      = "Resolve-DnsName fd01:1:1::2"
+                Expected = "fd01:1:1::2-> SRV1.skillsnet.dk"
+                PassIf = { param($o) $o -match '\bSRV1.skillsnet.dk\b' }               
+            },
+            @{
+                Name     = "SRV2 IPv4 PTR - 10.1.1.3"
+                Cmd      = "Resolve-DnsName 10.1.1.3"
+                Expected = "10.1.1.3 -> SRV2.skillsnet.dk"
+                PassIf = { param($o) $o -match '\bSRV2.skillsnet.dk\b' }               
+            },
+            @{
+                Name     = "SRV2 IPv6 PTR - fd01:1:1::3"
+                Cmd      = "Resolve-DnsName fd01:1:1::3"
+                Expected = "fd01:1:1::3-> SRV2.skillsnet.dk"
+                PassIf = { param($o) $o -match '\bSRV2.skillsnet.dk\b' }               
+            },
+            @{
+                Name     = "CLIENT IPv4 PTR - 10.2.1.10"
+                Cmd      = "Resolve-DnsName 10.2.1.10"
+                Expected = "10.2.1.10 -> CLIENT.skillsnet.dk"
+                PassIf = { param($o) $o -match '\bCLIENT.skillsnet.dk\b' }               
+            },
+            @{
+                Name     = "CLIENT IPv6 PTR - fd01:2:1::10"
+                Cmd      = "Resolve-DnsName fd01:2:1::10"
+                Expected = "fd01:2:1::10-> CLIENT.skillsnet.dk"
+                PassIf = { param($o) $o -match '\bCLIENT.skillsnet.dk\b' }               
+            },
+            @{
+                Name     = "RTR-CPH IPv4 PTR - 10.1.1.254"
+                Cmd      = "Resolve-DnsName 10.1.1.254"
+                Expected = "10.1.1.254 -> RTR-CPH.skillsnet.dk"
+                PassIf = { param($o) $o -match '\bRTR-CPH.skillsnet.dk\b' }               
+            },
+            @{
+                Name     = "RTR-CPH IPv6 PTR - fd01:1:1::254"
+                Cmd      = "Resolve-DnsName fd01:1:1::254"
+                Expected = "fd01:1:1::254-> RTR-CPH.skillsnet.dk"
+                PassIf = { param($o) $o -match '\bRTR-CPH.skillsnet.dk\b' }               
+            },
+            @{
+                Name     = "RTR-AAL IPv4 PTR - 10.2.1.254"
+                Cmd      = "Resolve-DnsName 10.2.1.254"
+                Expected = "10.2.1.254 -> RTR-AAL.skillsnet.dk"
+                PassIf = { param($o) $o -match '\bRTR-AAL.skillsnet.dk\b' }               
+            },
+            @{
+                Name     = "RTR-AAL IPv6 PTR - fd01:2:1::254"
+                Cmd      = "Resolve-DnsName fd01:2:1::254"
+                Expected = "fd01:2:1::254-> RTR-AAL.skillsnet.dk"
+                PassIf = { param($o) $o -match '\bRTR-AAL.skillsnet.dk\b' }               
+            }
+        )
+}
 
 # B3.M11 - DNS: Dynamic updates for domain-joined machines are enabled
 if (Should-Run "B3M11") {
