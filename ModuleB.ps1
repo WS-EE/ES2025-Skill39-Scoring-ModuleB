@@ -209,12 +209,12 @@ if (Should-Run "B2M1") {
         -DefaultIp "10.2.1.254" -Steps @(
             @{
                 Name     = "DC: IPv4 address is reachable"
-                Cmd      = "(Test-NetConnection 10.1.1.254 -WarningAction SilentlyContinue).PingSucceeded"
+                Cmd      = "(Test-NetConnection 10.1.1.1 -WarningAction SilentlyContinue).PingSucceeded"
                 Expected = "True"
             },
             @{
                 Name     = "DC: IPv6 address is reachable"
-                Cmd      = "(Test-NetConnection fd01:1:1::254 -WarningAction SilentlyContinue).PingSucceeded"
+                Cmd      = "(Test-NetConnection fd01:1:1::1 -WarningAction SilentlyContinue).PingSucceeded"
                 Expected = "True"
             }
         )
@@ -401,7 +401,6 @@ if (Should-Run "B3M11") {
             }
         )
 }
-
 # B3.M12 - DNS: Delegate skillsdev.dk to DEV-SRV
 if (Should-Run "B3M12") {
     Test-AspectSteps -Aspect "B3.M12" -Description "DNS: Delegate skillsdev.dk to DEV-SRV" `
@@ -409,7 +408,8 @@ if (Should-Run "B3M12") {
             @{
                 Name     = "DC: DNS zone delegation for skillsdev.dk"
                 Cmd      = "(Get-DnsServerZone -Name 'skillsdev.dk').ZoneType"
-                Expected = "Forwarder"                 
+                Expected = "Forwarder or Stub"
+                PassIf = { param($o) $o -match '\bStub\b' -or $o -match '\bForwarder\b' }               
             }
         )
 }
@@ -421,7 +421,8 @@ if (Should-Run "B3M13") {
             @{
                 Name     = "DC: DNS use INET as forwarder"
                 Cmd      = "(Get-DnsServerForwarder).IPAddress.IPAddressToSTring"
-                Expected = "198.51.100.1"                 
+                Expected = "198.51.100.1 and 2001:db8:100::1"
+                PassIf = { param($o) ($o -match '\b198.51.100.1\b') -and ($o -match '\b2001:db8:100::1\b') }                 
             }
         )
 }
@@ -452,7 +453,7 @@ if (Should-Run "B3M15") {
             @{
                 Name     = "DC: CA OCSP endpoint is correct"
                 Cmd      = "Get-CAAuthorityInformationAccess"
-                Expected = "AddToCertificateOcsp: True; Uri: http://ocsp.skillsnet.dk/ocsp"
+                Expected = "AddToCertificateOcsp: True; Uri: http://ocsp.skillsnet.dk/"
                 PassIf = { param($o) $o -match '\bocsp.skillsnet.dk\b' }
             },
             @{
@@ -755,13 +756,14 @@ if (Should-Run "B6M3") {
         )
 }
 
-# B6.M4 - File: DFS replication is configured between SRV1 and SRV2
+# B6.M4 - File: DFS replication is configured between SRV1 and SRV2 
 if (Should-Run "B6M4") {
     Test-AspectSteps -Aspect "B6.M4" -Description "File: DFS replication is configured between SRV1 and SRV2" `
         -DefaultIp "10.1.1.2" -Steps @(
             @{
-                Name     = "DFS replication is configured between SRV1 and SRV2"
-                Cmd      = "Get-DfsrConnection | Select GroupName, SourceComputerName, DestinationComputerName"
+                User     = "skillsnet\administrator"
+                Name     = "DFS replication is configured between SRV1 and SRV2. NB! Run from SRV1"
+                Cmd      = "Get-DfsrConnection -DomainName skillsnet.dk | Select GroupName, SourceComputerName, DestinationComputerName" # !!!!
                 Expected = "DFS Group is synchronized from SRV1->SRV2 and SRV2->SRV1"
                 PassIf = { param($o) ($o -match '\bSRV1\b') -and ($o -match '\bSRV2\b') }
             }
