@@ -317,7 +317,28 @@ if (Should-Run "B3M4") {
 }
 
 # B3.M5 - ADDS: Imported users from the CSV with correct parameters (Separate script)
-
+if (Should-Run "B3M5") {
+    Test-AspectSteps -Aspect "B3.M5" -Description "ADDS: Imported users from the CSV with correct parameters" `
+        -DefaultManual $True -Steps @(
+            @{
+                Name     = "Imported users from the CSV"
+                Expected = "All users are imported
+                    Users are located in these OUs:
+                    OU=Development,OU=Users,OU=Skills,DC=skillsnet,DC=dk: 305
+                    OU=Tech,OU=Users,OU=Skills,DC=skillsnet,DC=dk: 357
+                    OU=Contractors,OU=Users,OU=Skills,DC=skillsnet,DC=dk: 343
+                    OU=Finance,OU=Users,OU=Skills,DC=skillsnet,DC=dk: 340
+                    OU=Employees,OU=Users,OU=Skills,DC=skillsnet,DC=dk: 319
+                    OU=Sales,OU=Users,OU=Skills,DC=skillsnet,DC=dk: 336
+                "
+                Instructions = "
+                    1. Open DC machine, log-in with Administrator user
+                    2. Launch Terminal
+                    3. Run ADUserChecker.ps1 script
+                "
+            }
+        )
+}
 
 # B3.M6 - ADDS: FGPP polices are configured
 if (Should-Run "B3M6") {
