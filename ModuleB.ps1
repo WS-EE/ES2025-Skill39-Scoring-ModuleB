@@ -495,12 +495,75 @@ if (Should-Run "B5M1") {
 }
 
 # B5.M2 - IIS: Certificate-based authentication works at intra.skillsnet.dk (MANUAL)
+if (Should-Run "B5M2") {
+    Test-AspectSteps -Aspect "B5.M2" -Description "IIS: Certificate-based authentication works at intra.skillsnet.dk" `
+        -DefaultManual $True -Steps @(
+            @{
+                Name     = "Certificate-based authentication at intra.skillsnet.dk"
+                Expected = "User-based certificate issued by CA is used to access https://intra.skillsnet.dk"
+                Instructions = "
+                    1. Open CLIENT machine, log-in with random user
+                    2. Launch Edge web-browser
+                    3. Open https://intra.skillsnet.dk
+                    4. Certificate selection is prompted
+                    5. Authentication succeeds with user-based certificate
+                "
+            }
 
+        )
+}
 # B5.M3 -IIS: SAML-based authentication works at app.skillsnet.dk (MANUAL)
+if (Should-Run "B5M3") {
+    Test-AspectSteps -Aspect "B5.M3" -Description "IIS: SAML-based authentication works at app.skillsnet.dk" `
+        -DefaultManual $True -Steps @(
+            @{
+                Name     = "SAML-based authentication works at app.skillsnet.dk"
+                Expected = "SSO is needed to access https://app.skillsnet.dk"
+                Instructions = "
+                    1. Open CLIENT machine, log-in with random user
+                    2. Launch Edge web-browser
+                    3. Open https://app.skillsnet.dk
+                    4. You are redirected to ADFS under sso.skillsnet.dk
+                    5. Authentication succeeds with user credentials
+                    6. You are redirected back to https://app.skillsnet.dk
+                "
+            }
+
+        )
+}
 
 # B5.M4 - IIS: ADFS provides correct claims for app.skillsnet.dk (MANUAL)
+if (Should-Run "B5M4") {
+    Test-AspectSteps -Aspect "B5.M4" -Description "IIS: ADFS provides correct claims for app.skillsnet.dk" `
+        -DefaultManual $True -Steps @(
+            @{
+                Name     = "ADFS provides correct claims for app.skillsnet.dk"
+                Expected = "
+                ADFS provides following claims:
+                Nameidentifier = firstname.lastname@skillsnet.dk
+                Surname = Lastname
+                Name = Firstname Lastname"
+                Instructions = "Open https://app.skillsnet.dk"
+            }
+
+        )
+}
 
 # B5.M5 - IIS: Web sites have valid certificates issued by Skillsnet CA (MANUAL)
+if (Should-Run "B5M5") {
+    Test-AspectSteps -Aspect "B5.M5" -Description "IIS: Web sites have valid certificates issued by Skillsnet CA" `
+        -DefaultManual $True -Steps @(
+            @{
+                Name     = "Web sites have valid certificates issued by Skillsnet CA"
+                Expected = "Certificates are signed by Skillsnet CA for www, intra and app"
+                Instructions = "
+                    1. Open: https://www.skillsnet.dk, https://intra.skillsnet.dk and https://app.skillsnet.dk
+                    2. Validate that certificate is signed by Skillsnet CA"
+            }
+
+        )
+}
+
 
 # B5.M6 - Storage: 12GB disk is attached
 
