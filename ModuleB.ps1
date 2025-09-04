@@ -509,7 +509,6 @@ if (Should-Run "B5M2") {
                     5. Authentication succeeds with user-based certificate
                 "
             }
-
         )
 }
 # B5.M3 -IIS: SAML-based authentication works at app.skillsnet.dk (MANUAL)
@@ -528,7 +527,6 @@ if (Should-Run "B5M3") {
                     6. You are redirected back to https://app.skillsnet.dk
                 "
             }
-
         )
 }
 
@@ -545,7 +543,6 @@ if (Should-Run "B5M4") {
                 Name = Firstname Lastname"
                 Instructions = "Open https://app.skillsnet.dk"
             }
-
         )
 }
 
@@ -560,18 +557,85 @@ if (Should-Run "B5M5") {
                     1. Open: https://www.skillsnet.dk, https://intra.skillsnet.dk and https://app.skillsnet.dk
                     2. Validate that certificate is signed by Skillsnet CA"
             }
-
         )
 }
 
 
 # B5.M6 - Storage: 12GB disk is attached
+if (Should-Run "B5M6") {
+    Test-AspectSteps -Aspect "B5.M6" -Description "Storage: 12GB disk is attached" `
+        -DefaultIp "10.1.1.3" -Steps @(
+            @{
+                Name     = "SRV2: 12GB disk is attached"
+                Cmd      = "Get-PSDrive -Name C"
+                Expected = "12GB disk attached under B: drive letter"
+                PassIf = { param($o) ($o -match '\bB\b') -and ($o -match '\b11\b') }
+            }
+        )
+}
+
 
 # B5.M7 - Storage: iSCSI disk configured correctly
+if (Should-Run "B5M7") {
+    Test-AspectSteps -Aspect "B5.M7" -Description "Storage: iSCSI disk configured correctly" `
+        -DefaultIp "10.1.1.3" -Steps @(
+            @{
+                Name     = "SRV2: iSCSI disk configured correctly"
+                Cmd      = "Test-Path B:\iSCSIVirtualDisks\Skillsnet-Backup.vhdx"
+                Expected = "True"
+            }
+        )
+}
 
 # B5.M8 - Storage: iSCSI access is allowed only from authorized initiator DC server
+if (Should-Run "B5M8") {
+    Test-AspectSteps -Aspect "B5.M8" -Description "Storage: iSCSI access is allowed only from authorized initiator DC server" `
+        -DefaultIp "10.1.1.3" -Steps @(
+            @{
+                Name     = "SRV2: iSCSI access is allowed only from authorized initiator DC server"
+                Cmd      = "Get-IscsiServerTarget | Select TargetName, InitiatorIds"
+                Expected = "Target - dc, Initiator - dc.skillsnet.dk"
+                PassIf = { param($o) $o -match '\bdc.skillsnet.dk\b' }
+            }
+        )
+}
 
 # B5.M9 - WEF: Security events are forwarded from domain-joined computers
+if (Should-Run "B5M9") {
+    Test-AspectSteps -Aspect "B5.M9" -Description "WEF: Security events are forwarded from domain-joined computers" `
+        -DefaultIp "10.1.1.3" -Steps @(
+            @{
+                Name     = "SRV2: Security events are forwarded from DC"
+                Cmd      = "(Get-WinEvent -LogName 'ForwardedEvents' -ErrorAction SilentlyContinue).MachineName | Sort-Object -Unique"
+                Expected = "Events are forwarded by - DC.skillsnet.dk"
+                PassIf = { param($o) $o -match '\bDC.skillsnet.dk\b' }
+            },
+            @{
+                Name     = "SRV2: Security events are forwarded from SRV1"
+                Cmd      = "(Get-WinEvent -LogName 'ForwardedEvents' -ErrorAction SilentlyContinue).MachineName | Sort-Object -Unique"
+                Expected = "Events are forwarded by - SRV1.skillsnet.dk"
+                PassIf = { param($o) $o -match '\bSRV1.skillsnet.dk\b' }
+            },
+            @{
+                Name     = "SRV2: Security events are forwarded from SRV2"
+                Cmd      = "(Get-WinEvent -LogName 'ForwardedEvents' -ErrorAction SilentlyContinue).MachineName | Sort-Object -Unique"
+                Expected = "Events are forwarded by - SRV2.skillsnet.dk"
+                PassIf = { param($o) $o -match '\bSRV2.skillsnet.dk\b' }
+            },
+            @{
+                Name     = "SRV2: Security events are forwarded from RODC"
+                Cmd      = "(Get-WinEvent -LogName 'ForwardedEvents' -ErrorAction SilentlyContinue).MachineName | Sort-Object -Unique"
+                Expected = "Events are forwarded by - RODC.skillsnet.dk"
+                PassIf = { param($o) $o -match '\bRODC.skillsnet.dk\b' }
+            },
+            @{
+                Name     = "SRV2: Security events are forwarded from CLIENT"
+                Cmd      = "(Get-WinEvent -LogName 'ForwardedEvents' -ErrorAction SilentlyContinue).MachineName | Sort-Object -Unique"
+                Expected = "Events are forwarded by - CLIENT.skillsnet.dk"
+                PassIf = { param($o) $o -match '\bCLIENT.skillsnet.dk\b' }
+            }
+        )
+}
 
 # B6.M1 - File: SMB encryption enabled on all files shares
 
