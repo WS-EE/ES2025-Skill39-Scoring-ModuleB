@@ -8,8 +8,8 @@ $Discrepancies = @()
 $OuCounts = @{}
 
 foreach ($Row in $CsvData) {
-    $SamAccountName = $Row.samAccountName
-
+    $SamAccountName = "$($Row.FirstName).$($Row.LastName)"
+    
     try {
         $AdUser = Get-ADUser -Filter { SamAccountName -eq $SamAccountName } -Properties DistinguishedName, EmailAddress, GivenName, Surname, Company, City, Department, Title, UserPrincipalName
         
