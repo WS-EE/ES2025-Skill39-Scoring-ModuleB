@@ -1246,14 +1246,14 @@ if (Should-Run "B6M7") {
             @{
                 Ip       = "10.1.1.2"
                 Name     = "DHCPv6 - check SRV1 priority"
-                Cmd      = "(Get-DhcpServerv6Scope).Preference)"
-                Expected = "Note down the priority, it needs to be lower than next step check at SRV2"
+                Cmd      = "(Get-DhcpServerv6Scope).Preference"
+                Expected = "Note down the priority, it needs to be lower/higher than next step check at SRV2"
             },
             @{
                 Ip       = "10.1.1.3"
                 Name     = "DHCPv6 - check SRV2 priority"
-                Cmd      = "(Get-DhcpServerv6Scope).Preference)"
-                Expected = "It needs to be higher than last step check at SRV1"
+                Cmd      = "(Get-DhcpServerv6Scope).Preference"
+                Expected = "It needs to be lower/higher than last step check at SRV1"
             }
         )
 }
